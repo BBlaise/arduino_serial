@@ -7,8 +7,13 @@
 
 #include "arduino_uart.h"
 #include "Arduino.h"
-#include "stdio.h"
+#include <stdint.h>
 #include "bitwise.h"
+
+// This function clears any bytes waiting in the UART's receive buffer
+void flushSerialBuffer(){
+	  while(Serial.available()) Serial.read();
+}
 
 // Print a tab-delimited array of integers to the serial monitor
 void serialPrintArray(int* array, int n_vals){
@@ -35,6 +40,7 @@ void serialPrintArray(float* array, int n_vals){
 
 // This function transmits a single 32-bit integer via UART
 void uartTransmit(int tx_int){
+	//TODO implement in a integer-size independent way
 	uint8_t tx_bytes[4] = {};
 	tx_bytes[0] = (tx_int >> 24) & 0xFF;
 	tx_bytes[1] = (tx_int >> 16) & 0xFF;
@@ -67,6 +73,17 @@ void uartTransmit(int* tx_ints, int n_tx){
     }
 }
 
+// This function transmits an array of 32-bit floats via UART
+void uartTransmit(float* tx_floats, int n_tx){
+	 uint8_t tx_bytes[n_tx][4] = {};
+    for(int ii = 0; ii < n_tx; ii++){
+        floatToBytes(tx_floats[ii], tx_bytes[ii]);
+        for(int jj = 0; jj < 4; jj++){
+        	Serial.write(tx_bytes[ii][jj]);
+        }
+    }
+}
+
 /*
 void uartTransmit(int* tx_ints, int n_tx){
 	Serial.println(sizeof(tx_ints[0]));
@@ -82,26 +99,6 @@ void uartTransmit(int* tx_ints, int n_tx){
     }
 }
 */
-
-// This function transmits an array of 32-bit floats via UART
-void uartTransmit(float* tx_floats, uint8_t tx_bytes[][4], int n_tx){
-    for(int ii = 0; ii < n_tx; ii++){
-        floatToBytes(tx_floats[ii], tx_bytes[ii]);
-        for(int jj = 0; jj < 4; jj++){
-        	Serial.write(tx_bytes[ii][jj]);
-        }
-    }
-}
-// This function transmits an array of 32-bit floats via UART
-void uartTransmit(float* tx_floats, int n_tx){
-	 uint8_t tx_bytes[n_tx][4] = {};
-    for(int ii = 0; ii < n_tx; ii++){
-        floatToBytes(tx_floats[ii], tx_bytes[ii]);
-        for(int jj = 0; jj < 4; jj++){
-        	Serial.write(tx_bytes[ii][jj]);
-        }
-    }
-}
 
 void uartTransmitMultiAscii(uint8_t* tx_msg, int n_bytes){
 	for(int ii = 0; ii < n_bytes; ii++){
@@ -160,19 +157,22 @@ float uartReceiveFloat(void){
 
 // This function receives an array of 32-bit integers via UART
 void uartReceive(int* rx_ints, int n_tx){
-	uint8_t rx_bytes[n_tx][4] = {};
+	int int_size = sizeof(rx_ints[0]);
+	//Serial.println(int_size);
+	uint8_t rx_bytes[n_tx][int_size] = {};
 
     for(int ii = 0; ii < n_tx; ii++){
-    	for(int jj = 0; jj < 4; jj++){
+    	for(int jj = 0; jj < int_size; jj++){
     		rx_bytes[ii][jj] = Serial.read();
     	}
 
-    	rx_ints[ii] = bytesToInt32(rx_bytes[ii]);
+    	rx_ints[ii] = bytesToInt(rx_bytes[ii]);
+    	//rx_ints[ii] = bytesToInt16(rx_bytes[ii]);
     }
 }
 
 // This function receives an array of 32-bit floats via UART
-void uartReceive(float* rx_ints, int n_tx){
+void uartReceive(float* rx_floats, int n_tx){
 	uint8_t rx_bytes[n_tx][4] = {};
 
     for(int ii = 0; ii < n_tx; ii++){
@@ -180,7 +180,7 @@ void uartReceive(float* rx_ints, int n_tx){
     		rx_bytes[ii][jj] = Serial.read();
     	}
 
-    	rx_ints[ii] = bytesToFloat(rx_bytes[ii]);
+    	rx_floats[ii] = bytesToFloat(rx_bytes[ii]);
     }
 }
 
