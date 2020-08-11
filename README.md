@@ -62,29 +62,24 @@ if(Serial.avaialble() >= n_rx_bytes){
 	uartReceive(rx, n_rx);					// convert the values to bytes and transmit them in a sequence (4 bytes total)
 }
 ```
-
 # Examples - arduino_uart
-Below are examples for using the functions
+The following example scripts are included in the folder **examples > arduino_uart_examples** to demonstrate the functionality of the library.
 
-## Transmit
+**transmit.cpp** - Transmit an array of either floats or ints periodically via UART\
+**receive.cpp** - Receive an array of either floats or ints whenever the appropriate amount of bytes are available\
+**bidirectional_driving.cpp** - Send and receive an array of numbers with the Arduino controlling the timing of communication\
+**bidirectonal_driven.cpp** - Send and receive an array of numbers with the other device controlling the timing of communication\
+**bidirectional_shared_start.cpp** - Bidirectional communication that includes protocol to start both devices at the same time\
+**bidirectional_error_checking.cpp** - Bidirectional communication with error checking to ensure data transmissions/receptions are complete\
 
-```
-Give examples
-```
-
-## Receive
-
-## Bidirectional
+# Methods - ArduinoUART
 
 # Examples - ArduinoUART
-
 
 ## Authors
 
 * **Bryan Blaise** - *Initial work* -
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
