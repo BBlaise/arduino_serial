@@ -1,44 +1,61 @@
 #include "Arduino.h"
+#include "ArxTypeTraits.h"
 
 // Arduino Libraries
 #include "TimerOne.h"
 
-// C/C++ Libraries
-#include <stdint.h>
-
 // Custom Libraries
 #include "bitwise.h"
-#include "arduino_uart.h"
+#include "arduino_serial.h"
+
+// Preprocessor Directives
+#define DEBUG 0
+#if DEBUG == 1
+#define toConsole(x) Serial.print(x);
+#define toConsoleLn(x) Serial.println(x)
+#else
+#define toConsole(x)
+#define toConsoleLn(x)
+#endif
 
 // Function Prototypes
 void timer1ISR(void);
 
-// Pin Assignments
+void setup() {
+	uint32_t baud_rate = 115200;
+	Serial.begin(baud_rate);						// open serial port
+	delay(100);										// wait for serial port to open
+	//flushSerialInputBuffer();						// clears input buffer
+	Serial.flush();									// clears output buffer
 
-// Objects
-
-// Global Variables
-uint32_t timer1_period = 1000;		// timer period [ms]
-uint32_t baud_rate = 115200;
-//uint32_t baud_rate = 9600;
-float tx_data[2] = {-1.2, 3.4};		// Array of floats to be transmitted
-//int tx_data[2] = {-1, 10000};		// Array to ints (int16_t) be transmitted
-int n_tx = sizeof(tx_data) / sizeof(tx_data[0]); // number of bytes to be transmitted
-
-void setup(){
-	Serial.begin(baud_rate);					// open serial port
-	delay(100);								// wait for serial port to open
-
+	uint32_t timer1_period = 1000;					// timer period [ms]
+	Timer1.attachInterrupt(timer1ISR);				// start program/timer ISR
 	Timer1.initialize(timer1_period*1000);
-	Timer1.attachInterrupt(timer1ISR);		// start program/timer ISR
 }
 
-void loop(){}
+void loop() {}
 
-void timer1ISR(void){
+void timer1ISR(void) {
 	//Serial.println("timer1 loop");
 
-	// Transmit an array of floats
-	uartTransmit(tx_data, n_tx);
-	Serial.write('\n');			// write newline if transmitting to a C++ script
+	const char* terminator = "\r\n";				// write extra newline if transmitting to a C++ script
+
+	// Transmit a single int or float
+	//static uint8_t tx = 254;
+	//static uint16_t tx = 12345;
+	//static uint32_t tx = 111222333;
+	//static int8_t tx = -100;
+	//static int16_t tx = -12345;
+	//static int32_t tx = 111222333;
+	//static int tx = -12345;
+	static float tx = 1.1;
+
+	//serialTransmitBinary(tx);
+	serialTransmitAscii(tx);
+	//serialTransmitAscii(tx, terminator);
+	//serialTransmitAscii("yo");					// can send strings too
+
+	toConsoleLn(tx);								// print to console for debugging if DEBUG = 1
+
+	tx--;
 }

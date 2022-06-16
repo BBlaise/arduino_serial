@@ -8,7 +8,7 @@
 
 // Custom Libraries
 #include "bitwise.h"
-#include "arduino_uart.h"
+#include "arduino_serial.h"
 
 // Function Prototypes
 void timer1ISR(void);			// timer loop
