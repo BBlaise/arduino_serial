@@ -6,13 +6,45 @@
  */
 
 #include "arduino_serial.h"
-#include "Arduino.h"
-#include "bitwise.h"
-#include "ArxTypeTraits.h"
 
 // This function clears any bytes waiting in the UART's receive buffer
 void flushSerialInputBuffer() {
 	  while (Serial.available()) Serial.read();
+}
+
+void serialTransmitAscii(uint8_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(int8_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(uint16_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(int16_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(uint32_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(int32_t tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+}
+
+void serialTransmitAscii(float tx_msg, const char* terminator = "\r\n") {
+	Serial.print(tx_msg);
+	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
 }
 
 // This function transmits a single signed integer of any size via UART
@@ -45,63 +77,93 @@ void serialTransmitBinary(int* tx_ints, unsigned int n_tx) {
 }
 
 // This function transmits an array of 32-bit floats via UART
-void serialTransmitBinaryFloat(float* tx_floats, unsigned int n_tx) {
+void serialTransmitBinaryFloat(float* tx_msg, unsigned int n_tx) {
 	uint8_t tx_bytes[n_tx][4] = {};
     for(int ii = 0; ii < n_tx; ii++){
-        floatToBytes(tx_floats[ii], tx_bytes[ii]);
+        floatToBytes(tx_msg[ii], tx_bytes[ii]);
         for(int jj = 0; jj < 4; jj++) Serial.write(tx_bytes[ii][jj]);
     }
 }
 
 // This function transmits an array of integers via UART
-void serialTransmitBinary(int* tx_ints, unsigned int n_tx, char* starter, char* terminator) {
-	int int_size = sizeof(tx_ints[0]);
+void serialTransmitBinary(int* tx_msg, unsigned int n_tx, char* starter, char* terminator) {
+	int int_size = sizeof(tx_msg[0]);
 	uint8_t tx_bytes[n_tx][int_size] = {};
 
     for(int ii = 0; ii < n_tx; ii++) {
-    	intToBytes(tx_ints[ii], tx_bytes[ii]);
+    	intToBytes(tx_msg[ii], tx_bytes[ii]);
         for(int jj = 0; jj < int_size; jj++) Serial.write(tx_bytes[ii][jj]);
     }
 }
 
-// transmit a delimeted array of bytes as ASCII
-void serialTransmitAscii(uint8_t* tx_bytes, unsigned int n_tx, char delimeter = ',') {
-	for(int ii = 0; ii < n_tx; ii++){
-		Serial.print(tx_bytes[ii]);
+// Transmit a delimeted array of bytes/chars/unsigned 8-bit integers as ASCII
+void serialTransmitAscii(uint8_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+	for(int ii = 0; ii < n_tx; ii++) {
+		Serial.print(tx_msg[ii]);
 		if(ii != n_tx-1) Serial.write(delimeter);
 	}
-	Serial.write('\n');
+	Serial.write(terminator);
+	// for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);		// seems unneccessary
 }
 
-//Transmit a delimited array of bytes (uint8_t) as ASCII (or to the serial monitor)
-void serialTransmitAscii(uint8_t* tx_bytes, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
-	for (int ii = 0; ii < n_tx; ii++) {
-		Serial.print(tx_bytes[ii]);
-		if (ii != n_tx-1) Serial.write(delimeter);
+// Transmit a delimeted array of signed 8-bit integers as ASCII
+void serialTransmitAscii(int8_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+	for(int ii = 0; ii < n_tx; ii++) {
+		Serial.print(tx_msg[ii]);
+		if(ii != n_tx-1) Serial.write(delimeter);
 	}
-
-	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+	Serial.write(terminator);
 }
 
 //Transmit a delimited array of unsigned 16-bit integers as ASCII (or to the serial monitor)
-void serialTransmitAscii(uint16_t* tx_ints, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+void serialTransmitAscii(uint16_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
 	for (int ii = 0; ii < n_tx; ii++) {
-		Serial.print(tx_ints[ii]);
+		Serial.print(tx_msg[ii]);
 		if (ii != n_tx-1) Serial.write(delimeter);
 	}
 
-	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+	Serial.write(terminator);
 }
 
-//Transmit a delimited array of integers as ASCII (or to the serial monitor)
-void serialTransmitAscii(int* tx_ints, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+// Transmit a delimited array of signed 16-bit integers as ASCII (or to the serial monitor)
+void serialTransmitAscii(int16_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
 	for (int ii = 0; ii < n_tx; ii++) {
-		Serial.print(tx_ints[ii]);
+		Serial.print(tx_msg[ii]);
 		if (ii != n_tx-1) Serial.write(delimeter);
 	}
 
-	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+	Serial.write(terminator);
 }
+
+// Transmit a delimited array of unsigned 32-bit integers as ASCII (or to the serial monitor)
+void serialTransmitAscii(uint32_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+	for (int ii = 0; ii < n_tx; ii++) {
+		Serial.print(tx_msg[ii]);
+		if (ii != n_tx-1) Serial.write(delimeter);
+	}
+
+	Serial.write(terminator);
+}
+
+// Transmit a delimited array of signed 32-bit integers as ASCII (or to the serial monitor)
+void serialTransmitAscii(int32_t* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+	for (int ii = 0; ii < n_tx; ii++) {
+		Serial.print(tx_msg[ii]);
+		if (ii != n_tx-1) Serial.write(delimeter);
+	}
+
+	Serial.write(terminator);
+}
+
+// Transmit a delimited array of integers as ASCII (or to the serial monitor)
+// void serialTransmitAscii(int* tx_msg, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
+// 	for (int ii = 0; ii < n_tx; ii++) {
+// 		Serial.print(tx_msg[ii]);
+// 		if (ii != n_tx-1) Serial.write(delimeter);
+// 	}
+
+// 	for (int ii = 0; ii < strlen(terminator); ii++) Serial.write(terminator[ii]);
+// }
 
 // Transmit a tab-delimited array of floats as ASCII (or to the serial monitor)
 void serialTransmitAscii(float* tx_floats, unsigned int n_tx, const char* delimeter = ",", const char* terminator = "\r\n") {
@@ -114,6 +176,43 @@ void serialTransmitAscii(float* tx_floats, unsigned int n_tx, const char* delime
 }
 
 // ------------ Receive Funcitons ------------------- //
+int8_t serialReceiveAscii(int8_t& rx, char (&rx_buffer)[20]) {
+	rx = atoi(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+uint8_t serialReceiveAscii(uint8_t& rx, char (&rx_buffer)[20]) {
+	rx = atoi(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+int16_t serialReceiveAscii(int16_t& rx, char (&rx_buffer)[20]) {
+	rx = atoi(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+uint16_t serialReceiveAscii(uint16_t& rx, char (&rx_buffer)[20]) {
+	rx = atoi(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+int32_t serialReceiveAscii(int32_t& rx, char (&rx_buffer)[20]) {
+	rx = atol(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+uint32_t serialReceiveAscii(uint32_t& rx, char (&rx_buffer)[20]) {
+	rx = atol(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+
+float serialReceiveAscii(float& rx, char (&rx_buffer)[20]) {
+	rx = (float)atof(rx_buffer);
+	memset(rx_buffer, 0, sizeof(rx_buffer));      // Clear the current buffer
+	return rx;
+}
+
 uint8_t serialReceiveBinaryUint8() {
 	uint8_t rx = Serial.read();
 	return rx;
@@ -312,4 +411,3 @@ int32_t serialReceiveAsciiInt32(int32_t& rx, char (&rx_buffer)[20]) {
 }
 
 // bool serialReceiveAscii(float* rx_floats, unsigned int n_tx) {}
-

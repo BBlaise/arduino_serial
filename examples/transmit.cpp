@@ -1,15 +1,15 @@
+// Preprocessor Directives
 #include "Arduino.h"
-#include "ArxTypeTraits.h"
 
 // Arduino Libraries
 #include "TimerOne.h"
 
 // Custom Libraries
 #include "bitwise.h"
-#include "arduino_serial.h"
+#define SERIAL_TEMPLATES 1
+	#include "arduino_serial.h"
 
-// Preprocessor Directives
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG == 1
 #define toConsole(x) Serial.print(x);
 #define toConsoleLn(x) Serial.println(x)
@@ -47,15 +47,15 @@ void timer1ISR(void) {
 	//static int8_t tx = -100;
 	//static int16_t tx = -12345;
 	//static int32_t tx = 111222333;
-	//static int tx = -12345;
-	static float tx = 1.1;
+	static int tx = -12345;
+	// static float tx = 1.1;
 
-	//serialTransmitBinary(tx);
 	serialTransmitAscii(tx);
 	//serialTransmitAscii(tx, terminator);
-	//serialTransmitAscii("yo");					// can send strings too
+	// serialTransmitAscii("yo");					// can send strings too
+	//serialTransmitBinary(tx);
 
-	toConsoleLn(tx);								// print to console for debugging if DEBUG = 1
+	// toConsoleLn(tx);								// print to console for debugging if DEBUG = 1
 
 	tx--;
 }

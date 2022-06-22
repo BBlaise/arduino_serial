@@ -7,7 +7,9 @@
 
 // Custom Libraries
 #include "bitwise.h"
-#include "arduino_serial.h"
+
+#define SERIAL_TEMPLATES 0
+	#include "arduino_serial.h"
 
 // Preprocessor Directives
 #define DEBUG 0
@@ -51,13 +53,13 @@ void setup(){
 void timer1ISR(void) {}
 
 void loop() {
-	//uint8_t rx = 0;		 uint8_t rx_expected = 254U;
-	//uint16_t rx = 0;			uint16_t rx_expected = 65534U;
-	//uint32_t rx = 0;		unsigned long rx_expected = 111222333UL;
-	//int8_t rx = 0;				int8_t rx_expected = -126;
-	//int16_t rx = 0;				int16_t rx_expected = -32766;
-	//int32_t rx = 0;			long rx_expected = -111222333;
-	//int rx = 0;		int rx_expected = -10;
+	// uint8_t rx = 0;		 uint8_t rx_expected = 254U;
+	// uint16_t rx = 0;			uint16_t rx_expected = 65534U;
+	// uint32_t rx = 0;		uint32_trx_expected = 111222333UL;
+	// int8_t rx = 0;				int8_t rx_expected = -126;
+	// int16_t rx = 0;				int16_t rx_expected = -32766;
+	// int32_t rx = 0;			int32_t rx_expected = -111222333;
+	// int rx = 0;		int rx_expected = -10;
 	float rx = 0.0;		float rx_expected = -1.2;
 		
 	// ---------- Receive Individual Values As Binary -------- //
